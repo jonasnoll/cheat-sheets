@@ -67,30 +67,23 @@ with open(filepath, "w") as text_file:
     text_file.write(data)
 
 
-# Read Textfile only ###################################################################
-
-with open("filename.txt", "rt") as f:
-    data_lines = f.readlines()
-
-
-# Save & Load Python Object ############################################################
-import pickle as pkl
-
-#write
-with open("filename.pkl", "wb") as f:
-    pkl.dump(obj, f)
-
-#open
-with open("filename.pkl", "rb") as f:
-    obj = pkl.load(f)
-
-
 
 # Dates in Pandas #####################################################################
 
-# Change to date for plotting
-df_hub_active['DateTime'] = pd.to_datetime(df_hub_active['DateTime'], format='%Y-%m-%d %H:%M:%S')
+# Change to date eg. for plotting
+df['DateTime'] = pd.to_datetime(df['DateTime'], format='%Y-%m-%d %H:%M:%S')
 
-# Check time period of the casted blades
-start = min(df_hub_active.loc[:, 'DateTime'].dt.strftime('%Y-%m-%d'))
-end = max(df_hub_active.loc[:, 'DateTime'].dt.strftime('%Y-%m-%d'))
+# Check time period 
+start = min(df.loc[:, 'DateTime'].dt.strftime('%Y-%m-%d'))
+end = max(df.loc[:, 'DateTime'].dt.strftime('%Y-%m-%d'))
+
+
+# Fiilter column by multipy Substring / Regex / Regstr#################################
+
+regstr = '|'.join(['01', '02', '03', '04', '05'])
+df_filtered = df[df['Type'].str.contains(regstr)]
+
+
+
+
+
