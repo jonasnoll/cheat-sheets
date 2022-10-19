@@ -56,16 +56,6 @@ import pandas as pd
 
 df = pd.read_csv('../data/df_defects.csv', sep=';')
 
-# Writing & Open Files #################################################################
-
-filepath ="my/path/file.txt"
-# Opening
-with open(filepath) as f:
-    data = json.load(f)
-# Writing
-with open(filepath, "w") as text_file:
-    text_file.write(data)
-
 
 
 # Dates in Pandas #####################################################################

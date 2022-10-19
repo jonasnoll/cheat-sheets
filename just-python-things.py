@@ -23,6 +23,8 @@ python -m ipykernel install --user --name=myVenvName
 
 
 # pip
+pip install -r requirements.txt
+
 # "I installed a package, but I can't import it!?"
 # Best fix: don't use the "pip" command, instead use "python -m pip"
 # ensures package is installed into same Python you'll be running.
@@ -176,12 +178,22 @@ finally:
 # Random Numbers / within Range #########################################################
 
 import random
+
+random.seed(10)
+
 a = random.randint(0,5)
 print(a)
 
 a = random.sample(range(795), 20)
 a.sort()
 print(a)
+
+
+# taking random samples from list
+mylist = [2, 2, 4, 6, 6, 8]
+ n = 4
+ a = random.sample(mylist, n)
+ print(a)
 
 # Inline Expression / Variable Assignment ###############################################
 
@@ -216,6 +228,28 @@ for path in dirs:
 # Plotting #############################################################################
 
 print("https://jakevdp.github.io/PythonDataScienceHandbook/04.01-simple-line-plots.html")
+
+
+# Matplot make custom axis labels
+
+# Eg for spectrograms
+
+def get_plt_time_axis_labels(axis_size, n_places, t_start, t_end, timeline):
+    axis_range = [i for i in range(axis_size)]
+    # Get Axis array
+    timeline = timeline[::axis_size]
+    time_axis = timeline[t_start:t_end]
+
+    ax_places = [int(axis_size/n_places*i) for i in range(n_places)] + [axis_size-1]
+    locator_axis = [f"{time_axis[i]:.9f}" if i in ax_places else None for i in range(axis_size)]
+
+    # print(ax_labels)
+
+    return axis_range, locator_axis
+
+x_range, labels = get_plt_freq_axis_labels(axis_size=num_pix, n_places=4, axis_limit=signal_obj.bandwidth_in_MHz, ax_centered=True)
+plt.xticks(x_range, labels, rotation='horizontal')
+
 
 # tmux #################################################################################
 
@@ -267,6 +301,7 @@ for i in [1, 10, 100, 1000]:
 
 
 ########################################################################################
+
 
 
 
