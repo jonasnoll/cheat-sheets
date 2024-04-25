@@ -1,23 +1,28 @@
  # Just Pyton Things to reuse
 
-# Venv ##################################################################################
+# Venv #########################################################################################
 
 # creates a virtualenv
-python3 -m venv myVenvName
+python3.10 -m venv myVenvName
 
 
 # activates the virtualenv
-source myVenvName/bin/activate
+source webapp-demo-pip/bin/activate
 
 # CONDA
-conda create --name myVenvName python=3.7
-    
-conda activate myVenvName
+conda create --name myVenvName python=3.8
+conda create --name yieldmanager-venv python=3.10
+
+# Remove Conda Env
+conda remove --name ENV_NAME --all
+
+# Freeze Conda Environment for pip without weird references
+pip list --format=freeze > requirements.txt
 
 
 # Venv to Jupyter Notebooks
-pip install jupyter
-pip install ipykernel
+pip install ipykernel 
+# pip install jupyter ipykernel
 
 python -m ipykernel install --user --name=myVenvName
 
@@ -26,18 +31,54 @@ python -m ipykernel install --user --name=myVenvName
 pip install -r requirements.txt
 
 # "I installed a package, but I can't import it!?"
-# Best fix: don't use the "pip" command, instead use "python -m pip"
+# Best fix: don't use the "pip" command, instead use 
+python -m pip install PACKAGE
 # ensures package is installed into same Python you'll be running.
 
-# Init ##################################################################################
+
+# Ad folder to github project ##################################################################
+
+git init
+
+# eg. git@github.com:jonasnoll/funneldemo.git
+git remote add origin <Repository_Location>
+
+# Checkout on the branch 
+git branch -M main
+
+# Add gitignore 
+touch .gitignore
+
+# Add files 
+git add . 
+
+# Initial commit 
+git commit -m "Initial commit"
+
+# Push to main for github (should be master with gitlab)
+git push -u origin main
+
+
+
+# Init #########################################################################################
 def main():
     let_the_script_roll()
 
 if __name__ == "__main__":
+    # print("Starting...\n")
     log.info("Starting Script...")
     main()
 
-# Class with documentation #########################################################################
+# Hot-Releoad Notebook #########################################################################
+
+import sys 
+
+sys.path.append('/Users/jonasnoll/Devprojects/analysis/bp-prod-data-analysis')
+%load_ext autoreload
+%autoreload 2
+
+
+# Class with documentation ######################################################################
 class Dog():
 	"""
     A class used to represent a Dog.
@@ -113,6 +154,18 @@ date = date.strftime("%d.%m.%Y")
 
 f'The date is {date:%A, %B %d, %Y}.'
 
+
+# Get datetime from unix timestamp (s or ms) ############################################
+
+from datetime import datetime
+
+ts = int('1671023926000')
+
+# if you encounter a "year is out of range" error the timestamp
+# may be in milliseconds, try `ts /= 1000` in that case
+print(datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'))
+
+
 # Logging ###############################################################################
 import logging
 
@@ -152,6 +205,63 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 sys.excepthook = handle_exception
 ###################
+
+# Oder Logging Klasse kopieren 
+import sys
+import logging
+
+
+class Log():
+    def __init__(self, logfile='mylog'):
+        self.logfile = logfile
+        self.logger = logging.getLogger(__name__)
+
+        logging.basicConfig(filename=f"./logs/log_{self.logfile}.log",
+                                filemode='a',
+                                format="%(asctime)s.%(msecs)03d - %(filename)s - %(levelname)s: %(message)s",
+                                datefmt="%Y-%m-%d %H:%M:%S",
+                                level=logging.DEBUG)
+        
+        sys.excepthook = self.handle_exception
+        
+
+    def handle_exception(self, exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+
+        self.logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+###################
+    
+# Make a request ########################################################################
+
+# get request / post request
+import requests
+ 
+url = "https://httpbin.org/get"
+ 
+headers = {"Content-Type": "application/json; charset=utf-8"}
+# headers = {"Authorization": f"Bearer pat_i404oYyPsH5VSmna2bPLaT691xSdo0ef"}
+ 
+params = {
+    "id": 1001,
+    "name": "geek",
+    "passion": "coding",
+}
+
+# OR
+# params = dict(
+#     id=1001,
+#     name="geek",
+#     passion="coding",
+# )
+ 
+response = requests.get(url, headers=headers, params=params)
+ 
+print("Status Code", response.status_code)
+print("JSON Response ", response.json())
+
+
 
 
 # Check for Type / is type or Check for Attr / is attr ################################
@@ -224,13 +334,17 @@ file_paths = glob.glob("/path/to/dir/*.png", recursive=True)
 for path in dirs:
     print(path)
 
+# Alternative 
+yaml_files = glob.glob(os.path.join(os.path.abspath('app_configs/'), '*.yaml'))
+
+
 
 # Plotting #############################################################################
 
-print("https://jakevdp.github.io/PythonDataScienceHandbook/04.01-simple-line-plots.html")
+s = "see just ds things"
 
 
-# Matplot make custom axis labels
+# Matplot make custom axis labels #######################################################
 
 # Eg for spectrograms
 
