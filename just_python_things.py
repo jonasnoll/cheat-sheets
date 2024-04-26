@@ -241,7 +241,7 @@ import requests
 url = "https://httpbin.org/get"
  
 headers = {"Content-Type": "application/json; charset=utf-8"}
-# headers = {"Authorization": f"Bearer pat_i404oYyPsH5VSmna2bPLaT691xSdo0ef"}
+# headers = {"Authorization": f"Bearer xxxxxxxx"}
  
 params = {
     "id": 1001,
