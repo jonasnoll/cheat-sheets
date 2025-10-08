@@ -11,7 +11,7 @@ source webapp-demo-pip/bin/activate
 
 # CONDA
 conda create --name myVenvName python=3.8
-conda create --name yieldmanager-venv python=3.10
+conda create --name asdf python=3.12
 
 # Remove Conda Env
 conda remove --name ENV_NAME --all
@@ -34,6 +34,7 @@ pip install -r requirements.txt
 # Best fix: don't use the "pip" command, instead use 
 python -m pip install PACKAGE
 # ensures package is installed into same Python you'll be running.
+# -m steht für module (also das python in dem venv)
 
 
 # Ad folder to github project ##################################################################
@@ -129,6 +130,15 @@ class Puppy(Dog):
 
 puppy1 = Puppy('Rex')
 
+
+# Pydantic Data Model #####################################################################
+from pydantic import BaseModel
+
+class QuestionBase(BaseModel):
+    question_text: str
+    choices: List[ChoiceBase]
+
+
 # Timing things #########################################################################
 import time
 
@@ -167,6 +177,7 @@ print(datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'))
 
 
 # Logging ###############################################################################
+
 import logging
 
 log = logging.getLogger(__name__)
@@ -185,7 +196,7 @@ logging.basicConfig(filename=logname,
                             datefmt='%H:%M:%S',
                             level=logging.DEBUG) # level is minimum message level it will accept
 
-# Logging with catching errors (COPY THIS ONE)
+# Logging with catching errors 
 ###### Logging #####
 import sys
 import logging
@@ -204,34 +215,87 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 sys.excepthook = handle_exception
-###################
 
-# Oder Logging Klasse kopieren 
+################### (COPY THIS ONE !!!)
+
+import os
 import sys
 import logging
+from logging.handlers import RotatingFileHandler
 
+# from utils.utils import create_directory
+
+LOG_FILE_NAME = 'debug_logs.log'
 
 class Log():
-    def __init__(self, logfile='mylog'):
-        self.logfile = logfile
-        self.logger = logging.getLogger(__name__)
+    def __init__(self, name, logfile="mylog.log", stdout=True):
+        """Custom Logging Class for Logging in a log file"""
+        assert logfile.split('.')[-1] == 'log', "Ivalid log-file extension. Must be .log"
 
-        logging.basicConfig(filename=f"./logs/log_{self.logfile}.log",
-                                filemode='a',
-                                format="%(asctime)s.%(msecs)03d - %(filename)s - %(levelname)s: %(message)s",
-                                datefmt="%Y-%m-%d %H:%M:%S",
-                                level=logging.DEBUG)
+        name = __name__ if name == 'module' else name
+
+        # Get logfile path
+        current_directory = os.path.dirname(os.path.abspath(sys.argv[0])) 
+        logfile = os.path.join(current_directory, 'logs/', logfile)
         
+        self.logfile = logfile
+        self.logger = logging.getLogger(name)
+
+        # Create directory for placing the files
+        self.create_log_directory(logfile)
+
+        # Set Logginf Format
+        log_format = logging.Formatter(
+            "%(asctime)s.%(msecs)03d - %(filename)s (%(name)s) - %(levelname)s: %(message)s"
+        )
+
+        # Log to Std Out Handler
+        stdoutHandler = logging.StreamHandler(stream=sys.stdout)
+        stdoutHandler.setLevel(logging.INFO)
+        stdoutHandler.setFormatter(log_format)
+
+        # Log to File Handler
+        # fileHandler = logging.FileHandler(self.logfile)
+        fileHandler = RotatingFileHandler(self.logfile, backupCount=10, maxBytes=5000000) # Handles to large
+        fileHandler.setLevel(logging.INFO)
+        fileHandler. setFormatter(log_format)
+
+        # Add handlers
+        if stdout:
+            self.logger.addHandler(stdoutHandler)
+        self.logger.addHandler(fileHandler)
+
+        # Set level of logger again because the levels of the handlers dont propagate
+        self.logger.setLevel(logging.INFO)
+
         sys.excepthook = self.handle_exception
-        
+
 
     def handle_exception(self, exc_type, exc_value, exc_traceback):
         if issubclass(exc_type, KeyboardInterrupt):
             sys.__excepthook__(exc_type, exc_value, exc_traceback)
             return
 
-        self.logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
-###################
+        self.logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+
+    def create_log_directory(self, logfile):
+        # Get parent directory of the logfile
+        parent_dir = os.path.dirname(logfile)
+        # Resolve the relative path to an absolute path
+        # Check if the directory exists, and create it if it does not
+        if not os.path.exists(parent_dir):
+            os.makedirs(parent_dir, exist_ok=True)
+            self.logger.info(f"Directory '{parent_dir}' created.")
+        else:
+            self.logger.info(f"Directory '{parent_dir}' already exists.")
+
+
+
+# dash_logger = Log(name="dash.dash", logfile=LOG_FILE_NAME, stdout=False).logger
+logger = Log(name="module", logfile=LOG_FILE_NAME).logger
+
+###################3
     
 # Make a request ########################################################################
 
@@ -410,8 +474,27 @@ for i in [1, 10, 100, 1000]:
     print(f"I was {i:<6} in this case.")
     # I was 1      in this case.
     # I was 10     in this case.
-    # I was 100    in this case.
+    # I was 100    in this case.3
     # I was 1000   in this case.
+
+
+# Fill with zeros for numbering 
+txt = "50"
+x = txt.zfill(3)
+
+print(x) # 050
+
+
+# Pyinstaller ######################################################################
+
+# https://realpython.com/pyinstaller-python/
+
+# 1. Create main file on top level to run app
+
+
+
+
+
 
 
 ########################################################################################
