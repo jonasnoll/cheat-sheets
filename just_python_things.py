@@ -2,6 +2,25 @@
 
 # Venv #########################################################################################
 
+# Show Available Python Versions 
+pyenv versions
+
+# Install new version
+pyenv install 3.12.0
+
+# Create venv at root of the project
+pyenv virtualenv 3.12.0 myprojectvenv
+
+# Activate 
+pyenv local myprojectvenv
+
+# Delete Venv
+pyenv virtualenv-delete myprojectvenv
+
+
+
+
+###### My Legacy Way ######
 # creates a virtualenv
 python3.10 -m venv myVenvName
 
